@@ -1,15 +1,35 @@
 const { Client, GatewayIntentBits } = require('discord.js');
 const cron = require('node-cron');
+const express = require('express');
 
 // Configuration
 const CONFIG = {
-    TOKEN: process.env.BOT_TOKEN,
-    GUILD_ID: process.env.GUILD_ID,
-    ROLE_ID: process.env.ROLE_ID,
-    BOT_ROLE_ID: process.env.BOT_ROLE_ID,
+    TOKEN: 'YOUR_BOT_TOKEN_HERE',
+    GUILD_ID: 'YOUR_GUILD_ID_HERE',
+    ROLE_ID: 'YOUR_ROLE_ID_HERE',
+    BOT_ROLE_ID: 'YOUR_BOT_ROLE_ID_HERE',
     // Cron expression for 12:01 AM daily (1 0 * * *)
     CRON_SCHEDULE: '1 0 * * *'
 };
+
+// Create Express app to keep service alive
+const app = express();
+
+app.get('/', (req, res) => {
+    res.send('Discord bot is running!');
+});
+
+app.get('/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        uptime: process.uptime(),
+        bot: client.user ? client.user.tag : 'not logged in'
+    });
+});
+
+app.listen(CONFIG.PORT, () => {
+    console.log(`🌐 Health server running on port ${CONFIG.PORT}`);
+});
 
 // Create Discord client
 const client = new Client({
@@ -33,7 +53,7 @@ async function assignRandomRole() {
         // Fetch all members
         const members = await guild.members.fetch();
 
-        // Filter out bots and users who already have the role. No bots and no repeats
+        // Filter out bots and users who already have the role
         const eligibleMembers = members.filter(
             member => !member.user.bot && !member.roles.cache.has(CONFIG.ROLE_ID)
         );
