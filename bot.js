@@ -1,15 +1,19 @@
 const { Client, GatewayIntentBits } = require('discord.js');
 const cron = require('node-cron');
 const express = require('express');
+const { config } = require('dotenv');
 
+
+config(); // Load environment variables from .env file
 // Configuration
 const CONFIG = {
-    TOKEN: 'YOUR_BOT_TOKEN_HERE',
-    GUILD_ID: 'YOUR_GUILD_ID_HERE',
-    ROLE_ID: 'YOUR_ROLE_ID_HERE',
-    BOT_ROLE_ID: 'YOUR_BOT_ROLE_ID_HERE',
+    TOKEN: process.env.BOT_TOKEN,
+    GUILD_ID: process.env.GUILD_ID,
+    ROLE_ID: process.env.ROLE_ID,
+    BOT_ROLE_ID: process.env.BOT_ROLE_ID,
     // Cron expression for 12:01 AM daily (1 0 * * *)
-    CRON_SCHEDULE: '1 0 * * *'
+    CRON_SCHEDULE: '1 0 * * *',
+    PORT: process.env.PORT || 3000
 };
 
 // Create Express app to keep service alive
@@ -90,22 +94,8 @@ async function assignRandomRole() {
 }
 
 // Bot ready event
-client.once('ready', async () => {
+client.once('clientReady', async () => {
     console.log(`✅ Bot logged in as ${client.user.tag}`);
-
-    // Assign bot its own role
-    try {
-        const guild = await client.guilds.fetch(CONFIG.GUILD_ID);
-        const botMember = await guild.members.fetch(client.user.id);
-        const botRole = await guild.roles.fetch(CONFIG.BOT_ROLE_ID);
-
-        if (botRole && !botMember.roles.cache.has(CONFIG.BOT_ROLE_ID)) {
-            await botMember.roles.add(botRole);
-            console.log(`✅ Bot assigned role: ${botRole.name}`);
-        }
-    } catch (error) {
-        console.error('Error assigning bot role:', error);
-    }
 
     console.log(`⏰ Cron job scheduled for 12:01 AM daily`);
 
