@@ -11,6 +11,7 @@ const CONFIG = {
     GUILD_ID: process.env.GUILD_ID,
     ROLE_ID: process.env.ROLE_ID,
     BOT_ROLE_ID: process.env.BOT_ROLE_ID,
+    CHANNEL_ID: process.env.CHANNEL_ID,
     // Cron expression for 12:01 AM daily (1 0 * * *)
     CRON_SCHEDULE: '1 0 * * *',
     PORT: process.env.PORT || 3000
@@ -84,9 +85,10 @@ async function assignRandomRole() {
         await randomMember.roles.add(role);
         console.log(`✅ Assigned role "${role.name}" to ${randomMember.user.tag}`);
 
+
         // Optional: Send a message to a channel
-        // const channel = await guild.channels.fetch('CHANNEL_ID_HERE');
-        // await channel.send(`🎉 ${randomMember} has been selected for the daily role!`);
+        const channel = await guild.channels.fetch(config.CHANNEL_ID);
+        await channel.send(`Babe of the Day is: ${randomMember.user.tag} 🎉`);
 
     } catch (error) {
         console.error('Error assigning role:', error);
