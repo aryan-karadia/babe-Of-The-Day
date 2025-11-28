@@ -87,7 +87,12 @@ async function assignRandomRole() {
 
 
         // Optional: Send a message to a channel
-        const channel = await guild.channels.fetch(config.CHANNEL_ID);
+        const channel = await guild.channels.fetch(CONFIG.CHANNEL_ID);
+        // error handling if channel not found
+        if (!channel || !channel.isTextBased()) {
+            console.error('Channel not found or is not text-based!');
+            return;
+        }
         await channel.send(`Babe of the Day is: ${randomMember.user.tag} 🎉`);
 
     } catch (error) {
