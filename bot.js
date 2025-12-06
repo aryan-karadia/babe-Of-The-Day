@@ -14,7 +14,9 @@ const CONFIG = {
     CHANNEL_ID: process.env.CHANNEL_ID,
     // Cron expression for 12:01 AM daily (1 0 * * *)
     CRON_SCHEDULE: '1 0 * * *',
-    PORT: process.env.PORT || 3000
+    PORT: process.env.PORT || 3000,
+    // timezone
+    TIMEZONE: process.env.TIMEZONE || 'America/Edmonton' // Default timezone
 };
 
 // Create Express app to keep service alive
@@ -93,7 +95,7 @@ async function assignRandomRole() {
             console.error('Channel not found or is not text-based!');
             return;
         }
-        await channel.send(`Babe of the Day is: ${randomMember.user.tag} 🎉`);
+        await channel.send(`Babe of the Day is: <@${randomMember.user.id}>`);
 
     } catch (error) {
         console.error('Error assigning role:', error);
@@ -110,6 +112,8 @@ client.once('clientReady', async () => {
     cron.schedule(CONFIG.CRON_SCHEDULE, () => {
         console.log('🕐 Running daily role assignment...');
         assignRandomRole();
+    }, {
+        timezone: CONFIG.TIMEZONE
     });
 });
 
